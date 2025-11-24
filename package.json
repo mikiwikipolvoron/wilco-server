@@ -2,6 +2,7 @@
   "name": "server",
   "module": "index.ts",
   "devDependencies": {
+    "@biomejs/biome": "2.2.4",
     "@types/bun": "latest",
     "@types/node": "^24.10.1",
     "ts-node-dev": "^2.0.0",
