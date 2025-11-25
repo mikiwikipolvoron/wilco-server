@@ -3,15 +3,12 @@
   "compilerOptions": {
     "outDir": "dist",
     "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
     "verbatimModuleSyntax": false,
+    "moduleDetection": "force",
     "noEmit": false,
-    "esModuleInterop": true,
+    "esModuleInterop": true
     // "ignoreDeprecations": "6.0"
   },
-  "include": ["src"],
-  "references": [
-    { "path": "../../packages/shared-types" }
-  ]
+  "include": ["src"]
 }
