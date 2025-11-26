@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 import Fastify from "fastify";
 import { Server as IOServer } from "socket.io";
-import type { ClientEvent } from "wilco-msgs";
+import type { ClientEvent } from "@wilco/shared/events";
 import { EventRouter } from "./EventRouter";
 import { StateManager } from "./state/StateManager";
 
@@ -23,10 +23,12 @@ io.on("connection", (socket) => {
 	console.log("[Server] Client connected:", socket.id);
 
 	socket.on("client_event", (event: ClientEvent) => {
+        console.debug("[Server][DEBUG] ClientEvent recv: ", event);
 		eventRouter.handleClientEvent(socket, event);
 	});
 
 	socket.on("disconnect", () => {
+        console.debug("[Server][DEBUG] Disconnect recv: ", stateManager.getPlayer(socket.id));
 		stateManager.removePlayer(socket.id);
 		console.log("[Server] Client disconnected:", socket.id);
 	});

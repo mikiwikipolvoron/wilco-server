@@ -1,7 +1,8 @@
 // activities/BeatsManager.ts
 
+import type { GroupAccuracy } from "@wilco/shared/data";
+import type { ClientBeatsEvent, ClientEvent } from "@wilco/shared/events";
 import type { Socket } from "socket.io";
-import type { ClientBeatsEvent, ClientEvent, GroupAccuracy } from "wilco-msgs";
 import { ActivityManager } from "./ActivityManager";
 
 interface TapData {
@@ -80,23 +81,11 @@ export class BeatsManager extends ActivityManager {
 				}
 				break;
 			}
-			case "reaction": {
-				console.log(
-					"[BeatsManager] Reaction from",
-					socket.id,
-					":",
-					event.emoji,
-				);
-				this.broadcast({
-					type: "reaction",
-					emoji: event.emoji,
-					playerId: socket.id,
-					timestamp: Date.now(),
-				});
-				break;
-			}
+            default:
+                break;
 		}
 	}
+
 
 	private isBeatsEvent(event: ClientEvent): event is ClientBeatsEvent {
 		return event.type === "tap" || event.type === "reaction";
@@ -263,13 +252,15 @@ export class BeatsManager extends ActivityManager {
 			for (const tap of groupTaps) {
 				// Find the nearest expected beat time
 				const timeSinceStart = tap.timestamp - this.roundStartTime;
-				const nearestBeat = Math.round(timeSinceStart / beatInterval) * beatInterval;
+				const nearestBeat =
+					Math.round(timeSinceStart / beatInterval) * beatInterval;
 				const offset = Math.abs(timeSinceStart - nearestBeat);
 				offsets.push(offset);
 			}
 
 			// Calculate average offset
-			const avgOffset = offsets.reduce((sum, offset) => sum + offset, 0) / offsets.length;
+			const avgOffset =
+				offsets.reduce((sum, offset) => sum + offset, 0) / offsets.length;
 
 			// Convert offset to accuracy (0-1 scale)
 			// Perfect timing (0ms offset) = 1.0 accuracy
@@ -315,12 +306,14 @@ export class BeatsManager extends ActivityManager {
 
 			for (const tapTime of stats.taps) {
 				const timeSinceStart = tapTime - this.roundStartTime;
-				const nearestBeat = Math.round(timeSinceStart / beatInterval) * beatInterval;
+				const nearestBeat =
+					Math.round(timeSinceStart / beatInterval) * beatInterval;
 				const offset = Math.abs(timeSinceStart - nearestBeat);
 				offsets.push(offset);
 			}
 
-			const avgOffset = offsets.reduce((sum, offset) => sum + offset, 0) / offsets.length;
+			const avgOffset =
+				offsets.reduce((sum, offset) => sum + offset, 0) / offsets.length;
 			const maxOffset = 500;
 			stats.accuracy = Math.max(0, 1 - avgOffset / maxOffset);
 		}
@@ -336,7 +329,7 @@ export class BeatsManager extends ActivityManager {
 
 		// Find winning team (highest accuracy)
 		const winner = groupAccuracies.reduce((best, current) =>
-			current.accuracy > best.accuracy ? current : best
+			current.accuracy > best.accuracy ? current : best,
 		);
 
 		// Find MVP (player with highest individual accuracy)
@@ -348,7 +341,7 @@ export class BeatsManager extends ActivityManager {
 				groupId: "",
 				taps: [],
 				accuracy: 0,
-			}
+			},
 		);
 
 		this.broadcast({
@@ -362,8 +355,12 @@ export class BeatsManager extends ActivityManager {
 			},
 		});
 
-		console.log(`[BeatsManager] Winner: Team ${winner.groupId} (${Math.round(winner.accuracy * 100)}%)`);
-		console.log(`[BeatsManager] MVP: ${mvp.nickname} (${Math.round(mvp.accuracy * 100)}%)`);
+		console.log(
+			`[BeatsManager] Winner: Team ${winner.groupId} (${Math.round(winner.accuracy * 100)}%)`,
+		);
+		console.log(
+			`[BeatsManager] MVP: ${mvp.nickname} (${Math.round(mvp.accuracy * 100)}%)`,
+		);
 
 		// Return to lobby after results
 		setTimeout(() => {

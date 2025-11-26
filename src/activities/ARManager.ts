@@ -1,7 +1,8 @@
 // activities/ARManager.ts
 
+import type { ARItem, ARPhase } from "@wilco/shared/data";
+import { CLIENT_AR_EVENTS, type ClientAREvent, type ClientEvent } from "@wilco/shared/events";
 import type { Socket } from "socket.io";
-import type { ClientEvent, ClientAREvent, ARPhase, ARItem } from "wilco-msgs";
 import { ActivityManager } from "./ActivityManager";
 
 export class ARManager extends ActivityManager {
@@ -69,12 +70,7 @@ export class ARManager extends ActivityManager {
 			}
 
 			case "reaction": {
-				console.log(
-					"[ARManager] Reaction from",
-					socket.id,
-					":",
-					event.emoji,
-				);
+				console.log("[ARManager] Reaction from", socket.id, ":", event.emoji);
 				this.broadcast({
 					type: "reaction",
 					emoji: event.emoji,
@@ -167,9 +163,7 @@ export class ARManager extends ActivityManager {
 			});
 
 			// Check if boss should spawn (all players have tapped at least 10 items)
-			const allPlayersReachedMinimum = Array.from(
-				this.anchoredPlayers,
-			).every(
+			const allPlayersReachedMinimum = Array.from(this.anchoredPlayers).every(
 				(playerId) =>
 					(this.playerTaps.get(playerId) || 0) >= this.TAPS_PER_PLAYER,
 			);
@@ -266,10 +260,6 @@ export class ARManager extends ActivityManager {
 	}
 
 	private isAREvent(event: ClientEvent): event is ClientAREvent {
-		return (
-			event.type === "anchor_success" ||
-			event.type === "tap_item" ||
-			event.type === "reaction"
-		);
-	}
+		return CLIENT_AR_EVENTS.some(et => et === event.type)
+    }
 }
