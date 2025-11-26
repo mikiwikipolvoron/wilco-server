@@ -1,7 +1,8 @@
 // state/StateManager.ts
 
+import type { ActivityId, Player, ServerState } from "@wilco/shared/data";
+import type { ServerEvent } from "packages/wilco-shared";
 import type { Server as IOServer } from "socket.io";
-import type { ActivityId, Player, ServerEvent, ServerState } from "wilco-msgs";
 
 export class StateManager {
 	private state: ServerState;
@@ -80,10 +81,12 @@ export class StateManager {
 		const msg: ServerEvent = { type: "state_broadcast", state: this.state };
 		this.io.emit("server_event", msg);
 		console.log("[StateManager] Broadcast state:", this.state.currentActivity);
+        console.debug("[StateManager][D] State: ", this.getState())
 	}
 
 	broadcastEvent(event: ServerEvent): void {
 		this.io.emit("server_event", event);
 		console.log("[StateManager] Broadcast event:", event.type);
+        console.debug("[StateManager][D] ", event)
 	}
 }

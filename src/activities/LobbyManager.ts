@@ -1,13 +1,13 @@
 // activities/LobbyManager.ts
 
-import type { Socket } from "socket.io";
 import {
 	CLIENT_LOBBY_EVENTS,
-	CLIENT_SERVICE_EVENTS,
 	type ClientEvent,
+	type ClientGlobalEvent,
 	type ClientLobbyEvent,
 	type ClientServiceEvent,
-} from "wilco-msgs";
+} from "@wilco/shared/events";
+import type { Socket } from "socket.io";
 import { ActivityManager } from "./ActivityManager";
 
 export class LobbyManager extends ActivityManager {
@@ -26,6 +26,11 @@ export class LobbyManager extends ActivityManager {
 			return;
 		}
 
+		if (this.isGlobalEvent(event)) {
+			this.handleGlobalEvent(socket, event);
+			return;
+		}
+
 		// Handle lobby-specific events
 		if (this.isLobbyEvent(event)) {
 			this.handleLobbyEvent(socket, event);
@@ -33,15 +38,27 @@ export class LobbyManager extends ActivityManager {
 		}
 	}
 
-	private isServiceEvent(event: ClientEvent): event is ClientServiceEvent {
-		return CLIENT_SERVICE_EVENTS.some((t) => t === event.type);
-	}
-
 	private isLobbyEvent(event: ClientEvent): event is ClientLobbyEvent {
 		return CLIENT_LOBBY_EVENTS.some((t) => t === event.type);
 	}
 
+	private handleGlobalEvent(socket: Socket, event: ClientGlobalEvent): void {
+		console.debug("[Lobby] ClientGlobalEvent: ", event);
+		switch (event.type) {
+			case "reaction": {
+				this.broadcast({
+					type: "reaction",
+					emoji: event.emoji,
+					playerId: socket.id,
+					timestamp: Date.now(),
+				});
+				break;
+			}
+		}
+	}
+
 	private handleServiceEvent(socket: Socket, event: ClientServiceEvent): void {
+		console.debug("[Lobby] ClientServiceEvent: ", event);
 		switch (event.type) {
 			case "register": {
 				const player = {
@@ -62,7 +79,8 @@ export class LobbyManager extends ActivityManager {
 		}
 	}
 
-	private handleLobbyEvent(socket: Socket, event: ClientLobbyEvent): void {
+	private handleLobbyEvent(_socket: Socket, event: ClientLobbyEvent): void {
+		console.debug("[Lobby] ClientLobbyEvent: ", event);
 		switch (event.type) {
 			case "request_start_beats": {
 				console.log("[LobbyManager] Client requested beats activity");
