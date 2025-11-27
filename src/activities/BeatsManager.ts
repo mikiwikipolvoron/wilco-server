@@ -45,6 +45,7 @@ export class BeatsManager extends ActivityManager {
 
 	onActivityStart(): void {
 		console.log("[BeatsManager] Beats activity started");
+		console.debug("[BeatsManager] State: ", this.state);
 		this.startTimestamp = Date.now();
 		this.taps = [];
 		this.currentRound = 0;

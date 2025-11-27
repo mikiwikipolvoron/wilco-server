@@ -2,10 +2,10 @@ import type { ActivityId } from "@wilco/shared/data";
 import type { ClientEvent } from "@wilco/shared/events";
 import type { Server as IOServer, Socket } from "socket.io";
 import type { ActivityManager } from "./activities/ActivityManager";
+import { ARManager } from "./activities/ARManager";
 import { BeatsManager } from "./activities/BeatsManager";
 import { LobbyManager } from "./activities/LobbyManager";
 import type { StateManager } from "./state/StateManager";
-// import other activity managers
 
 export class EventRouter {
 	private activities: Record<string, ActivityManager>;
@@ -18,7 +18,7 @@ export class EventRouter {
 		this.activities = {
 			"lobby": new LobbyManager(io, state),
 			"beats": new BeatsManager(io, state),
-			"ar": new LobbyManager(io, state),
+			"ar": new ARManager(io, state),
 			"energizer": new LobbyManager(io, state),
 			"instruments": new LobbyManager(io, state),
 			"start": new LobbyManager(io, state),
