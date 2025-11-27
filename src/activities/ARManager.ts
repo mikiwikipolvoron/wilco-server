@@ -15,7 +15,7 @@ export class ARManager extends ActivityManager {
 	private bossHealth = 0;
 
 	// Constants
-	private readonly ANCHORING_DURATION = 30000; // 30s to scan marker
+	private readonly ANCHORING_DURATION = 10000; // 30s to scan marker
 	private readonly SMALL_ITEMS_COUNT = 5; // 5 items at once
 	private readonly TAPS_PER_PLAYER = 10; // Each player must tap 10 items
 	private readonly BOSS_MAX_HEALTH = 30; // 30 taps to defeat boss
