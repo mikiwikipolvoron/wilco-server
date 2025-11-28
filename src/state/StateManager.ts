@@ -13,7 +13,7 @@ export class StateManager {
 	constructor(io: IOServer) {
 		this.io = io;
 		this.state = {
-			currentActivity: "lobby",
+			currentActivity: "start",
 			players: {},
 			groups: undefined,
 		};
