@@ -82,11 +82,27 @@ export class LobbyManager extends ActivityManager {
 	private handleLobbyEvent(_socket: Socket, event: ClientLobbyEvent): void {
 		console.debug("[Lobby] ClientLobbyEvent: ", event);
 		switch (event.type) {
-			case "request_start_beats": {
+			case "request_start_beats":
 				console.log("[LobbyManager] Client requested beats activity");
 				this.state.setActivity("beats");
 				break;
-			}
+            case "request_start_ar":
+				console.log("[LobbyManager] Client requested AR activity");
+                this.state.setActivity("ar");
+                break;
+            case "request_start_instruments":
+				console.log("[LobbyManager] Client requested instruments activity");
+                this.state.setActivity("instruments");
+                break;
+            case "request_start_energizer":
+				console.log("[LobbyManager] Client requested energizer activity");
+                this.state.setActivity("energizer");
+                break;
+            case "request_start_over":
+				console.log("[LobbyManager] Client requested to start over");
+                this.state.setActivity("start");
+                break;
+			
 		}
 	}
 }
