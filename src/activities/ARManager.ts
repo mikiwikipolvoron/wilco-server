@@ -15,11 +15,11 @@ export class ARManager extends ActivityManager {
 	private bossHealth = 0;
 
 	// Constants
-	private readonly ANCHORING_DURATION = 30000; // 30s to scan marker
+	private readonly ANCHORING_DURATION = 10000; // 30s to scan marker
 	private readonly SMALL_ITEMS_COUNT = 5; // 5 items at once
 	private readonly TAPS_PER_PLAYER = 10; // Each player must tap 10 items
 	private readonly BOSS_MAX_HEALTH = 30; // 30 taps to defeat boss
-	private readonly RESULTS_DURATION = 10000; // 10s results screen
+	private readonly RESULTS_DURATION = 1000; // 1s quick transition to lobby
 	private readonly BOSS_SCALE = 3.0;
 
 	// Calculated dynamically
@@ -234,6 +234,12 @@ export class ARManager extends ActivityManager {
 		this.broadcast({
 			type: "ar_phase_change",
 			phase: "results",
+		});
+
+		// Broadcast empty items array to remove boss from client viewports
+		this.broadcast({
+			type: "ar_items_update",
+			items: this.items,
 		});
 
 		this.broadcast({
