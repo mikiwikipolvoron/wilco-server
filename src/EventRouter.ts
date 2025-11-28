@@ -16,12 +16,12 @@ export class EventRouter {
 
 		// Initialize activity managers
 		this.activities = {
+            "start": new LobbyManager(io, state),
 			"lobby": new LobbyManager(io, state),
 			"beats": new BeatsManager(io, state),
 			"ar": new ARManager(io, state),
 			"energizer": new LobbyManager(io, state),
 			"instruments": new LobbyManager(io, state),
-			"start": new LobbyManager(io, state),
 		};
 	}
 
