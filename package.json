@@ -16,6 +16,6 @@
     "dependencies": {
         "fastify": "^5.6.2",
         "socket.io": "^4.8.1",
-        "@mikiwikipolvoron/wilco": "link:@mikiwikipolvoron/wilco"
+        "@mikiwikipolvoron/wilco": "^1.0.0"
     }
 }
