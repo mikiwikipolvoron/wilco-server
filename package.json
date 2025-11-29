@@ -1,21 +1,21 @@
 {
-  "name": "server",
-  "module": "index.ts",
-  "devDependencies": {
-    "@biomejs/biome": "2.2.4",
-    "@types/bun": "latest",
-    "@types/node": "^24.10.1",
-    "tsx": "^4.20.6"
-  },
-  "peerDependencies": {
-    "typescript": "^5.9.3"
-  },
-  "scripts": {
-    "dev": "bun run --watch src/index.ts"
-  },
-  "dependencies": {
-    "fastify": "^5.6.2",
-    "socket.io": "^4.8.1",
-    "@wilco/shared": "link:@wilco/shared"
-  }
+    "name": "server",
+    "module": "index.ts",
+    "devDependencies": {
+        "@biomejs/biome": "2.2.4",
+        "@types/bun": "latest",
+        "@types/node": "^24.10.1",
+        "tsx": "^4.20.6"
+    },
+    "peerDependencies": {
+        "typescript": "^5.9.3"
+    },
+    "scripts": {
+        "dev": "bun run --watch src/index.ts"
+    },
+    "dependencies": {
+        "fastify": "^5.6.2",
+        "socket.io": "^4.8.1",
+        "@mikiwikipolvoron/wilco": "link:@mikiwikipolvoron/wilco"
+    }
 }
