@@ -13,10 +13,12 @@ export class ARManager extends ActivityManager {
 	private totalTaps = 0;
 	private playerTaps: Map<string, number> = new Map(); // Track taps per player
 	private bossHealth = 0;
+	private calibratedAlpha: number | null = null; // Store calibrated compass heading
+	private calibratedBeta: number | null = null; // Store calibrated tilt angle
 
 	// Constants
 	private readonly ANCHORING_DURATION = 10000; // 30s to scan marker
-	private readonly SMALL_ITEMS_COUNT = 5; // 5 items at once
+	private readonly SMALL_ITEMS_COUNT = 1; // Only 1 item at a time
 	private readonly TAPS_PER_PLAYER = 10; // Each player must tap 10 items
 	private readonly BOSS_MAX_HEALTH = 30; // 30 taps to defeat boss
 	private readonly RESULTS_DURATION = 1000; // 1s quick transition to lobby
@@ -33,6 +35,8 @@ export class ARManager extends ActivityManager {
 		this.items = [];
 		this.totalTaps = 0;
 		this.playerTaps.clear();
+		this.calibratedAlpha = null;
+		this.calibratedBeta = null;
 
 		this.broadcast({
 			type: "ar_phase_change",
@@ -51,6 +55,16 @@ export class ARManager extends ActivityManager {
 		switch (event.type) {
 			case "anchor_success": {
 				this.anchoredPlayers.add(socket.id);
+
+				// Store the first player's calibration as the reference
+				if (this.calibratedAlpha === null && this.calibratedBeta === null) {
+					this.calibratedAlpha = event.alpha;
+					this.calibratedBeta = event.beta;
+					console.log(
+						`[ARManager] Calibration set: Alpha=${event.alpha.toFixed(0)}°, Beta=${event.beta.toFixed(0)}°`,
+					);
+				}
+
 				const player = this.state.getPlayer(socket.id);
 				console.log(
 					`[ARManager] ${player?.nickname || socket.id} anchored (${this.anchoredPlayers.size} total)`,
@@ -153,7 +167,7 @@ export class ARManager extends ActivityManager {
 				tapsNeeded: tapsNeeded,
 			});
 
-			// Respawn item at new location
+			// Respawn item at new location (until boss spawns)
 			item.id = `item-${Date.now()}-${Math.random()}`;
 			item.position = this.generateRandomPosition();
 
@@ -262,6 +276,8 @@ export class ARManager extends ActivityManager {
 		this.anchoredPlayers.clear();
 		this.totalTaps = 0;
 		this.playerTaps.clear();
+		this.calibratedAlpha = null;
+		this.calibratedBeta = null;
 		console.log("[ARManager] AR activity ended");
 	}
 
