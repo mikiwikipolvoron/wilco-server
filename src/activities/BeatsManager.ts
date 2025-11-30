@@ -1,7 +1,7 @@
 // activities/BeatsManager.ts
 
-import type { GroupAccuracy } from "@mikiwikipolvoron/wilco/data";
-import type { ClientBeatsEvent, ClientEvent } from "@mikiwikipolvoron/wilco/events";
+import type { GroupAccuracy } from "@mikiwikipolvoron/wilco-lib/data";
+import type { ClientBeatsEvent, ClientEvent } from "@mikiwikipolvoron/wilco-lib/events";
 import type { Socket } from "socket.io";
 import { ActivityManager } from "./ActivityManager";
 

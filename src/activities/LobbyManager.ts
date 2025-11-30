@@ -6,7 +6,7 @@ import {
 	type ClientGlobalEvent,
 	type ClientLobbyEvent,
 	type ClientServiceEvent,
-} from "@mikiwikipolvoron/wilco/events";
+} from "@mikiwikipolvoron/wilco-lib/events";
 import type { Socket } from "socket.io";
 import { ActivityManager } from "./ActivityManager";
 

@@ -1,5 +1,5 @@
-import type { ActivityId } from "@mikiwikipolvoron/wilco/data";
-import type { ClientEvent } from "@mikiwikipolvoron/wilco/events";
+import type { ActivityId } from "@mikiwikipolvoron/wilco-lib/data";
+import type { ClientEvent } from "@mikiwikipolvoron/wilco-lib/events";
 import type { Server as IOServer, Socket } from "socket.io";
 import type { ActivityManager } from "./activities/ActivityManager";
 import { ARManager } from "./activities/ARManager";

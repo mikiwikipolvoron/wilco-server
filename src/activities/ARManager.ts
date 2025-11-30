@@ -1,7 +1,7 @@
 // activities/ARManager.ts
 
-import type { ARItem, ARPhase } from "@mikiwikipolvoron/wilco/data";
-import { CLIENT_AR_EVENTS, type ClientAREvent, type ClientEvent } from "@mikiwikipolvoron/wilco/events";
+import type { ARItem, ARPhase } from "@mikiwikipolvoron/wilco-lib/data";
+import { CLIENT_AR_EVENTS, type ClientAREvent, type ClientEvent } from "@mikiwikipolvoron/wilco-lib/events";
 import type { Socket } from "socket.io";
 import { ActivityManager } from "./ActivityManager";
 

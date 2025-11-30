@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 import Fastify from "fastify";
 import { Server as IOServer } from "socket.io";
-import type { ClientEvent } from "@mikiwikipolvoron/wilco/events";
+import type { ClientEvent } from "@mikiwikipolvoron/wilco-lib/events";
 import { EventRouter } from "./EventRouter";
 import { StateManager } from "./state/StateManager";
 
