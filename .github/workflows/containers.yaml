@@ -31,4 +31,3 @@ jobs:
           tags: ${{ github.repository }}
           secrets: |
             "github_token=${{ secrets.GITHUB_TOKEN }}"
-
