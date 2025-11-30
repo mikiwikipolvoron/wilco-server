@@ -7,7 +7,7 @@ import {
 	type ClientGlobalEvent,
 	type ClientServiceEvent,
 	type ServerEvent,
-} from "@wilco/shared/events";
+} from "@mikiwikipolvoron/wilco/events";
 import type { Server as IOServer, Socket } from "socket.io";
 import type { StateManager } from "../state/StateManager";
 

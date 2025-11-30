@@ -1,5 +1,5 @@
-import type { ActivityId } from "@wilco/shared/data";
-import type { ClientEvent } from "@wilco/shared/events";
+import type { ActivityId } from "@mikiwikipolvoron/wilco/data";
+import type { ClientEvent } from "@mikiwikipolvoron/wilco/events";
 import type { Server as IOServer, Socket } from "socket.io";
 import type { ActivityManager } from "./activities/ActivityManager";
 import { ARManager } from "./activities/ARManager";
@@ -16,7 +16,7 @@ export class EventRouter {
 
 		// Initialize activity managers
 		this.activities = {
-            "start": new LobbyManager(io, state),
+			"start": new LobbyManager(io, state),
 			"lobby": new LobbyManager(io, state),
 			"beats": new BeatsManager(io, state),
 			"ar": new ARManager(io, state),

@@ -1,7 +1,7 @@
 // activities/ARManager.ts
 
-import type { ARItem, ARPhase } from "@wilco/shared/data";
-import { CLIENT_AR_EVENTS, type ClientAREvent, type ClientEvent } from "@wilco/shared/events";
+import type { ARItem, ARPhase } from "@mikiwikipolvoron/wilco/data";
+import { CLIENT_AR_EVENTS, type ClientAREvent, type ClientEvent } from "@mikiwikipolvoron/wilco/events";
 import type { Socket } from "socket.io";
 import { ActivityManager } from "./ActivityManager";
 
@@ -283,5 +283,5 @@ export class ARManager extends ActivityManager {
 
 	private isAREvent(event: ClientEvent): event is ClientAREvent {
 		return CLIENT_AR_EVENTS.some(et => et === event.type)
-    }
+	}
 }

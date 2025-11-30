@@ -6,7 +6,7 @@ import {
 	type ClientGlobalEvent,
 	type ClientLobbyEvent,
 	type ClientServiceEvent,
-} from "@wilco/shared/events";
+} from "@mikiwikipolvoron/wilco/events";
 import type { Socket } from "socket.io";
 import { ActivityManager } from "./ActivityManager";
 
@@ -86,23 +86,23 @@ export class LobbyManager extends ActivityManager {
 				console.log("[LobbyManager] Client requested beats activity");
 				this.state.setActivity("beats");
 				break;
-            case "request_start_ar":
+			case "request_start_ar":
 				console.log("[LobbyManager] Client requested AR activity");
-                this.state.setActivity("ar");
-                break;
-            case "request_start_instruments":
+				this.state.setActivity("ar");
+				break;
+			case "request_start_instruments":
 				console.log("[LobbyManager] Client requested instruments activity");
-                this.state.setActivity("instruments");
-                break;
-            case "request_start_energizer":
+				this.state.setActivity("instruments");
+				break;
+			case "request_start_energizer":
 				console.log("[LobbyManager] Client requested energizer activity");
-                this.state.setActivity("energizer");
-                break;
-            case "request_start_over":
+				this.state.setActivity("energizer");
+				break;
+			case "request_start_over":
 				console.log("[LobbyManager] Client requested to start over");
-                this.state.setActivity("start");
-                break;
-			
+				this.state.setActivity("start");
+				break;
+
 		}
 	}
 }
