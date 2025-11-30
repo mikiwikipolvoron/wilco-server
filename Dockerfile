@@ -22,7 +22,7 @@ COPY . .
 
 # [optional] tests & build
 ENV NODE_ENV=production
-RUN bun build src/index.ts --out server --compile --minify --sourcemap --target bun
+RUN bun build src/index.ts --outfile server --compile --minify --sourcemap --target bun
 
 # copy production dependencies and source code into final image
 FROM base AS release
