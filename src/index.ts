@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
+import type { ClientEvent } from "@mikiwikipolvoron/wilco-lib/events";
 import Fastify from "fastify";
 import { Server as IOServer } from "socket.io";
-import type { ClientEvent } from "@mikiwikipolvoron/wilco-lib/events";
 import { EventRouter } from "./EventRouter";
 import { StateManager } from "./state/StateManager";
 
@@ -10,7 +10,9 @@ const httpServer = createServer(fastify.server);
 
 const io = new IOServer(httpServer, {
 	cors: {
-		origin: "*",
+		origin: [
+            "https://mikiwikipolvoron.github.io"
+        ],
 	},
 });
 
@@ -28,7 +30,10 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("disconnect", () => {
-		console.debug("[Server][DEBUG] Disconnect recv: ", stateManager.getPlayer(socket.id));
+		console.debug(
+			"[Server][DEBUG] Disconnect recv: ",
+			stateManager.getPlayer(socket.id),
+		);
 		stateManager.removePlayer(socket.id);
 		console.log("[Server] Client disconnected:", socket.id);
 	});
