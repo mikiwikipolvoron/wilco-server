@@ -6,23 +6,31 @@ WORKDIR /usr/src/app
 # this will cache them and speed up future builds
 FROM base AS install
 RUN mkdir -p /temp/dev
+
+COPY apps ./apps
+COPY packages ./packages
 COPY package.json bun.lock /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
+
+RUN --mount=type=secret,id=github_token,env=GITHUB_TOKEN cd /temp/dev && bun install --frozen-lockfile
 
 # install with --production (exclude devDependencies)
 RUN mkdir -p /temp/prod
-COPY package.json bun.lock /temp/prod/
-RUN cd /temp/prod && bun install --frozen-lockfile --production
+
+COPY apps ./apps
+COPY packages ./packages
+COPY package.json bun.lock /temp/dev/
+
+RUN --mount=type=secret,id=github_token,env=GITHUB_TOKEN cd /temp/prod && bun install --frozen-lockfile --production
 
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
 FROM base AS prerelease
-COPY --from=install /temp/dev/node_modules node_modules
-COPY . .
+COPY --from=install /temp/dev/apps/server/node_modules node_modules
+COPY ./apps/server .
 
 # [optional] tests & build
 ENV NODE_ENV=production
-RUN bun run build src/index.ts --out server --compile --minify --sourcemap --target bun
+RUN bun build src/index.ts --out server --compile --minify --sourcemap --target bun
 
 # copy production dependencies and source code into final image
 FROM base AS release
