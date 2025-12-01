@@ -10,11 +10,9 @@ const httpServer = createServer(fastify.server);
 
 const io = new IOServer(httpServer, {
 	cors: {
-		origin: [
-			"https://mikiwikipolvoron.github.io",
-			/^https?:\/\/ws\.tardy\.sh(:\d+)?$/, // Allow ws.tardy.sh with any port or no port
-			/^wss?:\/\/ws\.tardy\.sh(:\d+)?$/, // Allow WebSocket protocols
-		],
+		origin: ["https://mikiwikipolvoron.github.io"],
+		methods: ["GET", "POST"],
+		credentials: true,
 	},
 });
 
