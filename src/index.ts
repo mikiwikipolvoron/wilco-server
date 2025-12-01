@@ -10,11 +10,11 @@ const httpServer = createServer(fastify.server);
 
 const io = new IOServer(
 	httpServer,
-	// {cors: {
-	// 	origin: ["https://mikiwikipolvoron.github.io"],
+	{cors: {
+		origin: ["https://mikiwikipolvoron.github.io"],
 	// 	methods: ["GET", "POST"],
 	// 	credentials: true,
-	// },}
+	},}
 );
 
 // Initialize managers
