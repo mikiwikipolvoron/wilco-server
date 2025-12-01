@@ -1,7 +1,11 @@
 // state/StateManager.ts
 
-import type { ActivityId, Player, ServerState } from "@mikiwikipolvoron/wilco-lib/data";
-import type { ServerEvent } from "packages/wilco-shared";
+import type {
+	ActivityId,
+	Player,
+	ServerState,
+} from "@mikiwikipolvoron/wilco-lib/data";
+import type { ServerEvent } from "@mikiwikipolvoron/wilco-lib/events";
 import type { Server as IOServer } from "socket.io";
 
 export class StateManager {
