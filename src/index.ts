@@ -8,13 +8,14 @@ import { StateManager } from "./state/StateManager";
 const fastify = Fastify();
 const httpServer = createServer(fastify.server);
 
-const io = new IOServer(httpServer, {
-	cors: {
-		origin: ["https://mikiwikipolvoron.github.io"],
-		methods: ["GET", "POST"],
-		credentials: true,
-	},
-});
+const io = new IOServer(
+	httpServer,
+	// {cors: {
+	// 	origin: ["https://mikiwikipolvoron.github.io"],
+	// 	methods: ["GET", "POST"],
+	// 	credentials: true,
+	// },}
+);
 
 // Initialize managers
 const stateManager = new StateManager(io);
