@@ -11,7 +11,8 @@ const httpServer = createServer(fastify.server);
 const io = new IOServer(
 	httpServer,
 	{cors: {
-		origin: ["https://mikiwikipolvoron.github.io"],
+		// origin: ["https://mikiwikipolvoron.github.io"],
+        origin: true,
 	// 	methods: ["GET", "POST"],
 	// 	credentials: true,
 	},}
