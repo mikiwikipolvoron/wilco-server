@@ -1,7 +1,6 @@
 import type { ActivityId } from "@mikiwikipolvoron/wilco-lib/data";
 import type { ClientEvent } from "@mikiwikipolvoron/wilco-lib/events";
 import type { Server as IOServer, Socket } from "socket.io";
-import type { ActivityManager } from "./activities/ActivityManager";
 import {
 	ARManager,
 	BeatsManager,
@@ -9,6 +8,7 @@ import {
 	InstrumentsManager,
 	LobbyManager,
 } from "./activities";
+import type { ActivityManager } from "./activities/ActivityManager";
 import type { StateManager } from "./state/StateManager";
 
 export class EventRouter {
@@ -20,12 +20,12 @@ export class EventRouter {
 
 		// Initialize activity managers
 		this.activities = {
-			"start": new LobbyManager(io, state),
-			"lobby": new LobbyManager(io, state),
-			"beats": new BeatsManager(io, state),
-			"ar": new ARManager(io, state),
-			"energizer": new EnergizerManager(io, state),
-			"instruments": new InstrumentsManager(io, state),
+			start: new LobbyManager(io, state),
+			lobby: new LobbyManager(io, state),
+			beats: new BeatsManager(io, state),
+			ar: new ARManager(io, state),
+			energizer: new EnergizerManager(io, state),
+			instruments: new InstrumentsManager(io, state),
 		};
 	}
 
