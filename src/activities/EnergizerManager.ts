@@ -2,6 +2,8 @@ import {
 	CLIENT_ENERGIZER_EVENTS,
 	type ClientEnergizerEvent,
 	type ClientEvent,
+	type ClientGlobalEvent,
+	type ClientServiceEvent,
 	type EnergizerCell,
 	type EnergizerPattern,
 	type PlayerEnergy,
@@ -19,8 +21,14 @@ export class EnergizerManager extends ActivityManager {
 	private playerCharge = new Map<string, number>();
 	private lastMotion = new Map<string, number>();
 	private lastActive = new Map<string, number>();
-	private currentPhase: "instructions1" | "movement" | "send_energy" | "instructions2" | "sequence_show" | "sequence_input" | "results" =
-		"instructions1";
+	private currentPhase:
+		| "instructions1"
+		| "movement"
+		| "send_energy"
+		| "instructions2"
+		| "sequence_show"
+		| "sequence_input"
+		| "results" = "instructions1";
 	private entertainerInterval: NodeJS.Timeout | null = null;
 	private instructionsTimer: NodeJS.Timeout | null = null;
 	private movementTimer: NodeJS.Timeout | null = null;
@@ -37,12 +45,13 @@ export class EnergizerManager extends ActivityManager {
 	private readonly movementDurationMs = 60_000;
 	private readonly spotlightDurationMs = 10_000;
 	private readonly sendDurationMs = 12_000;
-	private readonly inputWindowMs = 15_000;
+	private readonly inputWindowMs = 20_000;
 
 	private readonly instructionSlides1 = [
-		"The artist will soon come on stage, but the stage has run out of energy.",
-		"In order to re-charge the energy and get the lights working again, we need your help.",
-		"Please click accept movement challenge on your phones and when the music starts dance and move as much as you can.",
+		"Energizer challenge",
+		"The artist will soon come out, but the stage has run out of energy.",
+		"In order to recharge the energy and get the lights working again, we need your help.",
+		"Please click \"accept movement\" on your phones and when the music starts dance and move as much as you can.",
 		"Dance with each other, be considerate, and you will help charge the stage!",
 	];
 
@@ -109,6 +118,43 @@ export class EnergizerManager extends ActivityManager {
 		}
 	}
 
+	private handleGlobalEvent(socket: Socket, event: ClientGlobalEvent): void {
+		console.debug("[Lobby] ClientGlobalEvent: ", event);
+		switch (event.type) {
+			case "reaction": {
+				this.broadcast({
+					type: "reaction",
+					emoji: event.emoji,
+					playerId: socket.id,
+					timestamp: Date.now(),
+				});
+				break;
+			}
+		}
+	}
+
+	private handleServiceEvent(socket: Socket, event: ClientServiceEvent): void {
+		console.debug("[Lobby] ClientServiceEvent: ", event);
+		switch (event.type) {
+			case "register": {
+				const player = {
+					id: socket.id,
+					nickname: event.nickname ?? `Player-${socket.id.slice(0, 4)}`,
+					role: event.role,
+					groupId:
+						event.role === "client" ? this.state.assignGroup() : undefined,
+					lastSeen: new Date(),
+				};
+				this.state.addPlayer(player);
+				break;
+			}
+			case "request_state": {
+				this.state.broadcastState();
+				break;
+			}
+		}
+	}
+
 	// Flow helpers
 	private runInstructionSet(
 		phase: "instructions1" | "instructions2",
@@ -139,8 +185,10 @@ export class EnergizerManager extends ActivityManager {
 		});
 
 		const totalDuration =
-			slides.reduce((acc, text) => acc + this.computeReadingDurationMs(text), 0) +
-			500;
+			slides.reduce(
+				(acc, text) => acc + this.computeReadingDurationMs(text),
+				0,
+			) + 500;
 		this.instructionsTimer = setTimeout(() => onComplete(), totalDuration);
 	}
 
@@ -241,7 +289,9 @@ export class EnergizerManager extends ActivityManager {
 			success,
 			correctCount,
 			totalParticipants,
-			nextDisplayMs: success ? undefined : Math.round(this.displayDurationMs * 1.5),
+			nextDisplayMs: success
+				? undefined
+				: Math.round(this.displayDurationMs * 1.5),
 		});
 
 		if (success && this.currentPattern) {
@@ -297,8 +347,8 @@ export class EnergizerManager extends ActivityManager {
 	// Utilities
 	private computeReadingDurationMs(text: string): number {
 		const words = text.trim().split(/\s+/).filter(Boolean).length;
-		const minutes = words / 180;
-		return Math.max(2000, Math.round(minutes * 60_000));
+		const minutes = words / 150;
+		return Math.max(3000, Math.round(minutes * 60_000));
 	}
 
 	private pushEntertainerUpdate(): void {
@@ -345,8 +395,13 @@ export class EnergizerManager extends ActivityManager {
 			do {
 				time =
 					startWindow +
-					Math.floor(Math.random() * (endWindow - startWindow - this.spotlightDurationMs));
-			} while (times.some((t) => Math.abs(t - time) < this.spotlightDurationMs + 2_000));
+					Math.floor(
+						Math.random() *
+							(endWindow - startWindow - this.spotlightDurationMs),
+					);
+			} while (
+				times.some((t) => Math.abs(t - time) < this.spotlightDurationMs + 2_000)
+			);
 			times.push(time);
 		}
 
@@ -406,7 +461,9 @@ export class EnergizerManager extends ActivityManager {
 		);
 
 		const submitted = new Map<number, string>();
-		cells.forEach((cell) => submitted.set(cell.index, cell.color.toLowerCase()));
+		cells.forEach((cell) =>
+			submitted.set(cell.index, cell.color.toLowerCase()),
+		);
 
 		if (submitted.size !== expected.size) return false;
 		for (const [index, color] of expected.entries()) {
