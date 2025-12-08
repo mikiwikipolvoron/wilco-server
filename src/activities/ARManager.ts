@@ -1,7 +1,11 @@
 // activities/ARManager.ts
 
 import type { ARItem, ARPhase } from "@mikiwikipolvoron/wilco-lib/data";
-import { CLIENT_AR_EVENTS, type ClientAREvent, type ClientEvent } from "@mikiwikipolvoron/wilco-lib/events";
+import {
+	CLIENT_AR_EVENTS,
+	type ClientAREvent,
+	type ClientEvent,
+} from "@mikiwikipolvoron/wilco-lib/events";
 import type { Socket } from "socket.io";
 import { ActivityManager } from "./ActivityManager";
 
@@ -21,7 +25,7 @@ export class ARManager extends ActivityManager {
 	private readonly SMALL_ITEMS_COUNT = 1; // Only 1 item at a time
 	private readonly TAPS_PER_PLAYER = 10; // Each player must tap 10 items
 	private readonly BOSS_MAX_HEALTH = 30; // 30 taps to defeat boss
-	private readonly RESULTS_DURATION = 1000; // 1s quick transition to lobby
+	private readonly RESULTS_DURATION = 10_000; // 1s quick transition to lobby
 	private readonly BOSS_SCALE = 3.0;
 
 	// Calculated dynamically
@@ -282,6 +286,6 @@ export class ARManager extends ActivityManager {
 	}
 
 	private isAREvent(event: ClientEvent): event is ClientAREvent {
-		return CLIENT_AR_EVENTS.some(et => et === event.type)
+		return CLIENT_AR_EVENTS.some((et) => et === event.type);
 	}
 }
