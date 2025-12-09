@@ -28,13 +28,22 @@ export class ARManager extends ActivityManager {
 	private readonly RESULTS_DURATION = 10_000; // 1s quick transition to lobby
 	private readonly BOSS_SCALE = 3.0;
 
+	// Instruction slides
+	private readonly instructionSlides = [
+		"[AR] Dressing Room Challenge",
+		"[AR] Use your phone camera to find and collect items around you.",
+		"[AR] Point your camera at the screen to calibrate your device.",
+	];
+
+	// Timers
+	private instructionsTimer: NodeJS.Timeout | null = null;
+
 	// Calculated dynamically
 	private getTotalTapsNeeded(): number {
 		return this.anchoredPlayers.size * this.TAPS_PER_PLAYER;
 	}
 
 	onActivityStart(): void {
-		this.phase = "anchoring";
 		this.anchoredPlayers.clear();
 		this.items = [];
 		this.totalTaps = 0;
@@ -42,15 +51,10 @@ export class ARManager extends ActivityManager {
 		this.calibratedAlpha = null;
 		this.calibratedBeta = null;
 
-		this.broadcast({
-			type: "ar_phase_change",
-			phase: "anchoring",
-		});
+		console.log("[ARManager] AR activity started - showing instructions");
 
-		console.log("[ARManager] AR activity started - anchoring phase");
-
-		// Auto-start hunting after anchoring period
-		setTimeout(() => this.startHunting(), this.ANCHORING_DURATION);
+		// Start with instructions
+		this.runInstructionSet(() => this.startAnchoring());
 	}
 
 	handleClientEvent(socket: Socket, event: ClientEvent): void {
@@ -282,7 +286,63 @@ export class ARManager extends ActivityManager {
 		this.playerTaps.clear();
 		this.calibratedAlpha = null;
 		this.calibratedBeta = null;
+		if (this.instructionsTimer) {
+			clearTimeout(this.instructionsTimer);
+			this.instructionsTimer = null;
+		}
 		console.log("[ARManager] AR activity ended");
+	}
+
+	private runInstructionSet(onComplete: () => void): void {
+		this.broadcast({
+			type: "ar_phase_change",
+			phase: "instructions",
+		});
+		this.phase = "instructions";
+
+		let delay = 0;
+		this.instructionSlides.forEach((text, idx) => {
+			const durationMs = this.computeReadingDurationMs(text);
+			const slide = idx + 1;
+			delay += idx === 0 ? 0 : this.computeReadingDurationMs(this.instructionSlides[idx - 1]);
+			this.instructionsTimer = setTimeout(() => {
+				this.broadcast({
+					type: "ar_instruction",
+					phase: "instructions",
+					slide,
+					totalSlides: this.instructionSlides.length,
+					text,
+					durationMs,
+				});
+			}, delay);
+		});
+
+		const totalDuration =
+			this.instructionSlides.reduce(
+				(acc, text) => acc + this.computeReadingDurationMs(text),
+				0,
+			) + 500;
+		this.instructionsTimer = setTimeout(() => onComplete(), totalDuration);
+	}
+
+	private startAnchoring(): void {
+		this.phase = "anchoring";
+
+		this.broadcast({
+			type: "ar_phase_change",
+			phase: "anchoring",
+		});
+
+		console.log("[ARManager] Anchoring phase started");
+
+		// Auto-start hunting after anchoring period
+		setTimeout(() => this.startHunting(), this.ANCHORING_DURATION);
+	}
+
+	private computeReadingDurationMs(text: string): number {
+		const words = text.trim().split(/\s+/).filter(Boolean).length;
+		const minutes = words / 150;
+		return Math.max(3000, Math.round(minutes * 60_000));
 	}
 
 	private isAREvent(event: ClientEvent): event is ClientAREvent {
