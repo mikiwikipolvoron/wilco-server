@@ -58,10 +58,18 @@ export class ARManager extends ActivityManager {
 	}
 
 	handleClientEvent(socket: Socket, event: ClientEvent): void {
-		if (!this.isAREvent(event)) return;
+		if (!this.isAREvent(event)) {
+			console.log(
+				`[ARManager] Ignoring non-AR event: ${event.type} from ${socket.id}`,
+			);
+			return;
+		}
 
 		switch (event.type) {
 			case "anchor_success": {
+				console.log(
+					`[ARManager] Received anchor_success from ${socket.id}, current phase: ${this.phase}`,
+				);
 				this.anchoredPlayers.add(socket.id);
 
 				// Store the first player's calibration as the reference
@@ -75,7 +83,7 @@ export class ARManager extends ActivityManager {
 
 				const player = this.state.getPlayer(socket.id);
 				console.log(
-					`[ARManager] ${player?.nickname || socket.id} anchored (${this.anchoredPlayers.size} total)`,
+					`[ARManager] ${player?.nickname || socket.id} anchored (${this.anchoredPlayers.size} total anchored players)`,
 				);
 				break;
 			}
@@ -113,8 +121,17 @@ export class ARManager extends ActivityManager {
 			phase: "hunting",
 		});
 
+		// Broadcast initial progress so entertainer knows tapsNeeded immediately
+		const tapsNeeded = this.getTotalTapsNeeded();
+		this.broadcast({
+			type: "ar_item_collected",
+			itemId: "", // No item collected yet, just initial state
+			tapCount: 0,
+			tapsNeeded: tapsNeeded,
+		});
+
 		console.log(
-			`[ARManager] Hunting phase started with ${this.anchoredPlayers.size} anchored players`,
+			`[ARManager] Hunting phase started with ${this.anchoredPlayers.size} anchored players (${tapsNeeded} taps needed)`,
 		);
 	}
 
