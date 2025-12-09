@@ -36,6 +36,15 @@ io.on("connection", (socket) => {
 			"[Server][DEBUG] Disconnect recv: ",
 			stateManager.getPlayer(socket.id),
 		);
+
+		// Notify activity BEFORE removing from state
+		const currentActivity = stateManager.getActivity();
+		const manager = eventRouter.getActivityManager(currentActivity);
+		if (manager) {
+			manager.onPlayerDisconnect(socket.id);
+		}
+
+		// Then remove from global state
 		stateManager.removePlayer(socket.id);
 		console.log("[Server] Client disconnected:", socket.id);
 	});

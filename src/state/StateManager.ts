@@ -61,11 +61,15 @@ export class StateManager {
 
 	setActivity(activity: ActivityId): void {
 		this.state.currentActivity = activity;
+
+		// Broadcast state FIRST (includes player list)
+		this.broadcastState();
+
+		// Then broadcast activity started event
 		this.broadcastEvent({
 			type: "activity_started",
 			activity,
 		});
-		this.broadcastState();
 	}
 
 	assignGroup(): string {
@@ -82,7 +86,7 @@ export class StateManager {
 
 	// Broadcasting
 	broadcastState(): void {
-		const msg: ServerEvent = { type: "state_broadcast", state: this.state };
+		const msg: ServerEvent = { type: "state_broadcast", state: this.getState() };
 		this.io.emit("server_event", msg);
 		console.log("[StateManager] Broadcast state:", this.state.currentActivity);
 		console.debug("[StateManager][D] State: ", this.getState())

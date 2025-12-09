@@ -531,4 +531,20 @@ export class EnergizerManager extends ActivityManager {
 	private isEnergizerEvent(event: ClientEvent): event is ClientEnergizerEvent {
 		return CLIENT_ENERGIZER_EVENTS.some((type) => type === event.type);
 	}
+
+	onPlayerDisconnect(playerId: string): void {
+		// Clean up player-specific maps
+		this.playerCharge.delete(playerId);
+		this.lastMotion.delete(playerId);
+		this.lastActive.delete(playerId);
+
+		// Remove from pending submissions
+		this.pendingSubmissions = this.pendingSubmissions.filter(
+			(submission) => submission.playerId !== playerId,
+		);
+
+		console.log(
+			`[EnergizerManager] Player ${playerId} disconnected, removed from activity state`,
+		);
+	}
 }

@@ -293,6 +293,19 @@ export class ARManager extends ActivityManager {
 		console.log("[ARManager] AR activity ended");
 	}
 
+	onPlayerDisconnect(playerId: string): void {
+		// Remove from anchored players set
+		const wasAnchored = this.anchoredPlayers.has(playerId);
+		this.anchoredPlayers.delete(playerId);
+
+		// Remove from player taps map
+		this.playerTaps.delete(playerId);
+
+		console.log(
+			`[ARManager] Player ${playerId} disconnected, removed from activity state (was anchored: ${wasAnchored})`,
+		);
+	}
+
 	private runInstructionSet(onComplete: () => void): void {
 		this.broadcast({
 			type: "ar_phase_change",

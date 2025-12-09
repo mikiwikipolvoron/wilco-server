@@ -224,4 +224,13 @@ export class InstrumentsManager extends ActivityManager {
 	private isInstrumentEvent(event: ClientEvent): event is ClientInstrumentsEvent {
 		return CLIENT_INSTRUMENT_EVENTS.some((t) => t === event.type);
 	}
+
+	onPlayerDisconnect(playerId: string): void {
+		// Remove instrument assignment
+		this.assignments.delete(playerId);
+
+		console.log(
+			`[InstrumentsManager] Player ${playerId} disconnected, removed instrument assignment`,
+		);
+	}
 }

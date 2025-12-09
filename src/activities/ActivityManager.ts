@@ -26,6 +26,12 @@ export abstract class ActivityManager {
 	// Called when activity ends
 	abstract onActivityEnd(): void;
 
+	// Called when a player disconnects during this activity
+	onPlayerDisconnect(playerId: string): void {
+		// Default no-op - activities override to clean up state
+		console.log(`[ActivityManager] Player ${playerId} disconnected (no cleanup implemented)`);
+	}
+
 	// Handle client events for this activity
 	abstract handleClientEvent(socket: Socket, event: ClientEvent): void;
 

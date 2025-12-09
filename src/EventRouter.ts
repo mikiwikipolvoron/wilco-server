@@ -57,4 +57,8 @@ export class EventRouter {
 			newManager.onActivityStart();
 		}
 	}
+
+	getActivityManager(activityId: string): ActivityManager | undefined {
+		return this.activities[activityId];
+	}
 }

@@ -368,4 +368,15 @@ export class BeatsManager extends ActivityManager {
 			this.state.setActivity("lobby");
 		}, this.RESULTS_DURATION);
 	}
+
+	onPlayerDisconnect(playerId: string): void {
+		// Remove all taps from disconnected player
+		const originalLength = this.taps.length;
+		this.taps = this.taps.filter((tap) => tap.playerId !== playerId);
+		const removedCount = originalLength - this.taps.length;
+
+		console.log(
+			`[BeatsManager] Player ${playerId} disconnected, removed ${removedCount} taps from tracking`,
+		);
+	}
 }
