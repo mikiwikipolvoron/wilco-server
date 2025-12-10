@@ -147,6 +147,11 @@ export class ARManager extends ActivityManager {
 			});
 		}
 
+		console.log(
+			`[ARManager] Broadcasting ${this.items.length} items to clients:`,
+			this.items.map((item) => `${item.id} at (${item.position.x.toFixed(1)}, ${item.position.y.toFixed(1)}, ${item.position.z.toFixed(1)})`),
+		);
+
 		this.broadcast({
 			type: "ar_items_update",
 			items: this.items,
