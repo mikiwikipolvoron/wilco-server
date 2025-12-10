@@ -84,6 +84,18 @@ export class StateManager {
 		this.setActivity("lobby");
 	}
 
+    broadcastLightTestOn(): void {
+        const msg = { type: "lights_trigger", target: 1 }
+        this.io.emit("server_event", msg);
+        console.log("[StateManager] Light test event emitted: ", msg);
+    }
+
+    broadcastLightTestOff(): void {
+        const msg = { type: "lights_trigger", target: 0 }
+        this.io.emit("server_event", msg);
+        console.log("[StateManager] Light test event emitted: ", msg);
+    }
+
 	// Broadcasting
 	broadcastState(): void {
 		const msg: ServerEvent = { type: "state_broadcast", state: this.getState() };

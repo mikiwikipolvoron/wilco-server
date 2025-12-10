@@ -71,4 +71,12 @@ process.stdin.on("data", (data) => {
 	if (cmd === "reset") {
 		stateManager.reset();
 	}
+
+    if (cmd === "lightsoff") {
+        stateManager.broadcastLightTestOff()
+    }
+
+    if (cmd === "lightson") {
+        stateManager.broadcastLightTestOn()
+    }
 });
