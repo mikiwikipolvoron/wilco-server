@@ -200,6 +200,19 @@ export class EnergizerManager extends ActivityManager {
 		});
 		this.currentPhase = "movement";
 
+		// Initialize playerCharge Map with all connected clients at 0%
+		const clientPlayers = Object.values(this.state.getPlayers()).filter(
+			(p) => p.role === "client",
+		);
+		console.log(
+			`[EnergizerManager] Initializing movement phase with ${clientPlayers.length} client players`,
+		);
+		for (const player of clientPlayers) {
+			this.playerCharge.set(player.id, 0);
+			this.lastMotion.set(player.id, Date.now());
+			this.lastActive.set(player.id, Date.now());
+		}
+
 		this.scheduleSpotlights();
 
 		this.movementEndTimer = setTimeout(() => {
@@ -363,6 +376,10 @@ export class EnergizerManager extends ActivityManager {
 				idle: false,
 			});
 		}
+
+		console.log(
+			`[EnergizerManager] Broadcasting entertainer update: ${players.length} players`,
+		);
 
 		this.broadcast({
 			type: "energizer_entertainer_update",
