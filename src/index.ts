@@ -53,7 +53,7 @@ io.on("connection", (socket) => {
 // Start server
 const PORT = Number.parseInt(process.env.PORT || "4000", 10);
 httpServer.listen(PORT, "0.0.0.0", () => {
-	console.log(`[Server] Listening on http://0.0.0.0:${PORT}`);
+	console.log(`[Server] Listening on ${JSON.stringify(httpServer.address())}`);
 });
 
 // Console commands for activity control
