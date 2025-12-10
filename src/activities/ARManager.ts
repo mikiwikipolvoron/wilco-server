@@ -95,6 +95,10 @@ export class ARManager extends ActivityManager {
 					);
 					return;
 				}
+				// Ignore taps during results phase (prevents infinite loop after boss dies)
+				if (this.phase === "results") {
+					return;
+				}
 				this.handleItemTap(socket.id, event.itemId);
 				break;
 			}
@@ -197,16 +201,7 @@ export class ARManager extends ActivityManager {
 				tapsNeeded: tapsNeeded,
 			});
 
-			// Respawn item at new location (until boss spawns)
-			item.id = `item-${Date.now()}-${Math.random()}`;
-			item.position = this.generateRandomPosition();
-
-			this.broadcast({
-				type: "ar_items_update",
-				items: this.items,
-			});
-
-			// Check if boss should spawn (all players have tapped at least 10 items)
+			// Check if boss should spawn FIRST (all players have tapped at least 10 items)
 			const allPlayersReachedMinimum = Array.from(this.anchoredPlayers).every(
 				(playerId) =>
 					(this.playerTaps.get(playerId) || 0) >= this.TAPS_PER_PLAYER,
@@ -217,7 +212,17 @@ export class ARManager extends ActivityManager {
 					"[ARManager] All players reached 10 taps! Spawning boss...",
 				);
 				this.spawnBoss();
+				return; // Don't respawn item, boss is spawning
 			}
+
+			// Respawn item at new location (only if boss isn't spawning)
+			item.id = `item-${Date.now()}-${Math.random()}`;
+			item.position = this.generateRandomPosition();
+
+			this.broadcast({
+				type: "ar_items_update",
+				items: this.items,
+			});
 		} else if (item.type === "boss") {
 			this.bossHealth = Math.max(0, this.bossHealth - 1);
 
