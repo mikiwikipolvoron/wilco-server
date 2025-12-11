@@ -1,15 +1,15 @@
-import { createServer } from "node:http";
 import type { ClientEvent } from "@mikiwikipolvoron/wilco-lib/events";
 import Fastify from "fastify";
 import { Server as IOServer } from "socket.io";
 import { EventRouter } from "./EventRouter";
 import { StateManager } from "./state/StateManager";
+import { SessionManager } from "./sessions/SessionManager";
+import { registerAdminRoutes } from "./admin/adminRoutes";
 
 const fastify = Fastify();
-const httpServer = createServer(fastify.server);
 
 const io = new IOServer(
-	httpServer,
+	fastify.server,
 	{cors: {
 		// origin: ["https://mikiwikipolvoron.github.io"],
         origin: true,
@@ -22,13 +22,19 @@ const io = new IOServer(
 const stateManager = new StateManager(io);
 const eventRouter = new EventRouter(io, stateManager);
 
+// Initialize session manager
+const sessionManager = new SessionManager(io);
+
+// Register admin API routes
+registerAdminRoutes(fastify, sessionManager, eventRouter, stateManager);
+
 // Socket connection handling
 io.on("connection", (socket) => {
 	console.log("[Server] Client connected:", socket.id);
 
 	socket.on("client_event", (event: ClientEvent) => {
 		console.debug("[Server][DEBUG] ClientEvent recv: ", event);
-		eventRouter.handleClientEvent(socket, event);
+		eventRouter.handleClientEvent(socket, event, sessionManager);
 	});
 
 	socket.on("disconnect", () => {
@@ -46,15 +52,15 @@ io.on("connection", (socket) => {
 
 		// Then remove from global state
 		stateManager.removePlayer(socket.id);
+		sessionManager.handleDisconnect(socket.id);
 		console.log("[Server] Client disconnected:", socket.id);
 	});
 });
 
 // Start server
 const PORT = Number.parseInt(process.env.PORT || "4000", 10);
-httpServer.listen(PORT, "0.0.0.0", () => {
-	console.log(`[Server] Listening on ${JSON.stringify(httpServer.address())}`);
-});
+await fastify.listen({ port: PORT, host: "0.0.0.0" });
+console.log(`[Server] Listening on port ${PORT}`);
 
 // Console commands for activity control
 process.stdin.setEncoding("utf8");

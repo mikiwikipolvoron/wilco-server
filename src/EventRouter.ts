@@ -10,6 +10,7 @@ import {
 } from "./activities";
 import type { ActivityManager } from "./activities/ActivityManager";
 import type { StateManager } from "./state/StateManager";
+import type { SessionManager } from "./sessions/SessionManager";
 
 export class EventRouter {
 	private activities: Record<string, ActivityManager>;
@@ -29,7 +30,52 @@ export class EventRouter {
 		};
 	}
 
-	handleClientEvent(socket: Socket, event: ClientEvent): void {
+	handleClientEvent(socket: Socket, event: ClientEvent, sessionManager?: SessionManager): void {
+		// Session validation for registration
+		if (event.type === "register" && sessionManager) {
+			const isValid = sessionManager.validateAndRegister(
+				socket.id,
+				event.sessionId,
+				event.deviceId
+			);
+
+			if (!isValid) {
+				socket.emit("error", {
+					type: "session_invalid",
+					message: "Invalid or expired session ID"
+				});
+				socket.disconnect(true);
+				return;
+			}
+
+			// Check for reconnection (device was previously connected)
+			if (event.deviceId) {
+				const oldSocketId = sessionManager.getPreviousSocketId(event.deviceId);
+				if (oldSocketId && oldSocketId !== socket.id) {
+					const transferred = this.state.transferPlayer(oldSocketId, socket.id);
+					if (transferred) {
+						console.log(`[EventRouter] Reconnected device ${event.deviceId}`);
+						// Send current state to reconnected player
+						this.state.broadcastState();
+						return; // Skip normal registration - player already exists
+					}
+				}
+			}
+
+			// Continue with normal registration if not a reconnection
+		} else if (event.type !== "register" && sessionManager) {
+			// For non-register events, verify socket is registered to active session
+			if (!sessionManager.isSocketRegistered(socket.id)) {
+				console.warn(`[EventRouter] Rejected event from unregistered socket: ${socket.id}`);
+				socket.emit("error", {
+					type: "not_registered",
+					message: "You must register to the session first"
+				});
+				return;
+			}
+		}
+
+		// Existing code continues here...
 		const currentActivity = this.state.getActivity();
 		const manager = this.activities[currentActivity];
 

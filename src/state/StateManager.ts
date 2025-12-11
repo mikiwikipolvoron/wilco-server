@@ -59,6 +59,22 @@ export class StateManager {
 		});
 	}
 
+	transferPlayer(oldSocketId: string, newSocketId: string): boolean {
+		const player = this.state.players[oldSocketId];
+		if (!player) return false;
+
+		// Update player's socket ID
+		player.id = newSocketId;
+		player.lastSeen = new Date();
+
+		// Move player to new socket ID
+		this.state.players[newSocketId] = player;
+		delete this.state.players[oldSocketId];
+
+		console.log(`[StateManager] Transferred player from ${oldSocketId} to ${newSocketId}`);
+		return true;
+	}
+
 	setActivity(activity: ActivityId): void {
 		this.state.currentActivity = activity;
 

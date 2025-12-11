@@ -6,12 +6,12 @@ WORKDIR /usr/src/app
 # this will cache them and speed up future builds
 FROM base AS install
 RUN mkdir -p /temp/dev
-COPY package.json bun.lock .npmrc /temp/dev/
+COPY package.json bun.lock .npmrc bunfig.toml /temp/dev/
 RUN --mount=type=secret,id=github_token,env=GITHUB_TOKEN cd /temp/dev && bun install --frozen-lockfile
 
 # install with --production (exclude devDependencies)
 RUN mkdir -p /temp/prod
-COPY package.json bun.lock .npmrc /temp/prod/
+COPY package.json bun.lock .npmrc bunfig.toml /temp/prod/
 RUN --mount=type=secret,id=github_token,env=GITHUB_TOKEN cd /temp/prod && bun install --frozen-lockfile --production
 
 # copy node_modules from temp directory
