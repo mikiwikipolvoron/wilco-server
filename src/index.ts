@@ -1,5 +1,6 @@
 import type { ClientEvent } from "@mikiwikipolvoron/wilco-lib/events";
 import Fastify from "fastify";
+import cors from "@fastify/cors";
 import { Server as IOServer } from "socket.io";
 import { EventRouter } from "./EventRouter";
 import { StateManager } from "./state/StateManager";
@@ -7,6 +8,12 @@ import { SessionManager } from "./sessions/SessionManager";
 import { registerAdminRoutes } from "./admin/adminRoutes";
 
 const fastify = Fastify();
+
+// Enable CORS for admin API routes
+await fastify.register(cors, {
+	origin: true, // Allow all origins (same as Socket.IO config)
+	credentials: true,
+});
 
 const io = new IOServer(
 	fastify.server,
