@@ -51,7 +51,7 @@ export class EnergizerManager extends ActivityManager {
 		"Energizer challenge",
 		"The artist will soon come out, but the stage has run out of energy.",
 		"In order to recharge the energy and get the lights working again, we need your help.",
-		"Please click \"accept movement\" on your phones and when the music starts dance and move as much as you can.",
+		'Please click "accept movement" on your phones and when the music starts dance and move as much as you can.',
 		"Dance with each other, be considerate, and you will help charge the stage!",
 	];
 
