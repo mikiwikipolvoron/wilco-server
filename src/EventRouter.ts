@@ -47,6 +47,22 @@ export class EventRouter {
 				socket.disconnect(true);
 				return;
 			}
+
+			// Check for reconnection (device was previously connected)
+			if (event.deviceId) {
+				const oldSocketId = sessionManager.getPreviousSocketId(event.deviceId);
+				if (oldSocketId && oldSocketId !== socket.id) {
+					const transferred = this.state.transferPlayer(oldSocketId, socket.id);
+					if (transferred) {
+						console.log(`[EventRouter] Reconnected device ${event.deviceId}`);
+						// Send current state to reconnected player
+						this.state.broadcastState();
+						return; // Skip normal registration - player already exists
+					}
+				}
+			}
+
+			// Continue with normal registration if not a reconnection
 		} else if (event.type !== "register" && sessionManager) {
 			// For non-register events, verify socket is registered to active session
 			if (!sessionManager.isSocketRegistered(socket.id)) {
