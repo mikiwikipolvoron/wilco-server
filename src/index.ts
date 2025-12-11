@@ -1,22 +1,29 @@
+import cors from "@fastify/cors";
 import type { ClientEvent } from "@mikiwikipolvoron/wilco-lib/events";
 import Fastify from "fastify";
 import { Server as IOServer } from "socket.io";
-import { EventRouter } from "./EventRouter";
-import { StateManager } from "./state/StateManager";
-import { SessionManager } from "./sessions/SessionManager";
 import { registerAdminRoutes } from "./admin/adminRoutes";
+import { EventRouter } from "./EventRouter";
+import { SessionManager } from "./sessions/SessionManager";
+import { StateManager } from "./state/StateManager";
 
 const fastify = Fastify();
 
-const io = new IOServer(
-	fastify.server,
-	{cors: {
+// Enable CORS for admin API routes
+await fastify.register(cors, {
+	origin: true, // Allow all origins (same as Socket.IO config)
+	credentials: true,
+	methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
+});
+
+const io = new IOServer(fastify.server, {
+	cors: {
 		// origin: ["https://mikiwikipolvoron.github.io"],
-        origin: true,
-	// 	methods: ["GET", "POST"],
-	// 	credentials: true,
-	},}
-);
+		origin: true,
+		// 	methods: ["GET", "POST"],
+		// 	credentials: true,
+	},
+});
 
 // Initialize managers
 const stateManager = new StateManager(io);
@@ -78,11 +85,11 @@ process.stdin.on("data", (data) => {
 		stateManager.reset();
 	}
 
-    if (cmd === "lightsoff") {
-        stateManager.broadcastLightTestOff()
-    }
+	if (cmd === "lightsoff") {
+		stateManager.broadcastLightTestOff();
+	}
 
-    if (cmd === "lightson") {
-        stateManager.broadcastLightTestOn()
-    }
+	if (cmd === "lightson") {
+		stateManager.broadcastLightTestOn();
+	}
 });
